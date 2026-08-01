@@ -7,6 +7,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  where,
   serverTimestamp,
   updateDoc,
   doc,
@@ -16,10 +17,19 @@ export default function ChatPage() {
  const [messages, setMessages] = useState<any[]>([]);
 
 useEffect(() => {
+  if (!auth.currentUser) {
+  return;
+  }
+  const conversationId =
+  auth.currentUser?.email === "saurxmahirr@gmail.com"
+    ? new URLSearchParams(window.location.search).get("user")
+    : auth.currentUser?.uid;
+
   const q = query(
-    collection(db, "messages"),
-    orderBy("createdAt", "asc")
-  );
+   collection(db, "messages"),
+   where("conversationId", "==", conversationId),
+   orderBy("createdAt", "asc")
+);
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
     setMessages(
@@ -49,12 +59,18 @@ const sendMessage = async () => {
   if (!message.trim()) return;
 
   await addDoc(collection(db, "messages"), {
-   text: message,
-   name: auth.currentUser?.displayName,
-   email: auth.currentUser?.email,
-   createdAt: serverTimestamp(),
-   seen: false,
-  });
+  text: message,
+  name: auth.currentUser?.displayName,
+  email: auth.currentUser?.email,
+
+  conversationId:
+    auth.currentUser?.email === "saurxmahirr@gmail.com"
+      ? new URLSearchParams(window.location.search).get("user")
+      : auth.currentUser?.uid,
+
+  createdAt: serverTimestamp(),
+  seen: false,
+});
 
   setMessage("");
 };
