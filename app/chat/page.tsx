@@ -69,12 +69,21 @@ const sendMessage = async () => {
           : "bg-zinc-800"
       }`}
     >
-      <p>{msg.text}</p>
+     <p>{msg.text}</p>
 
-      <span className="text-xs opacity-70 block mt-1">
-        {msg.name}
-      </span>
+     <div className="text-xs opacity-70 mt-1">
+      <div>{msg.name}</div>
+
+     <div>
+      {msg.createdAt?.seconds
+        ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {
+             hour: "2-digit",
+             minute: "2-digit",
+          })
+        : ""}
     </div>
+  </div>
+ </div>
   ))}
 
 </div>
