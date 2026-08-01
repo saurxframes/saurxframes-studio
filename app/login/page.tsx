@@ -11,10 +11,10 @@ export default function LoginPage() {
       alert(`Welcome ${result.user.displayName}!`);
 
       window.location.href = "/chat";
-    } catch (error) {
-      console.error(error);
-      alert("Login failed");
-    }
+    } catch (error: any) {
+     console.error(error);
+     alert(JSON.stringify(error));
+    } 
   };
 
   return (
