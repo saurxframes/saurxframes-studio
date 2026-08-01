@@ -246,7 +246,21 @@ useEffect(() => {
   >
     Explore Gallery
   </button>
+    <div className="mt-4 flex justify-center gap-4">
+     <a
+       href="/login"
+       className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold transition"
+     >
+       Login
+    </a>
 
+  < a
+     href="/chat"
+     className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-xl font-semibold transition"
+  >
+     💬 Chat with SaurxFrames
+   </a>
+ </div>
   <div
     style={{
       marginTop: "50px",
