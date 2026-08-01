@@ -14,10 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://saurxframes-studio.vercel.app"),
+
   title: "SaurxFrames Studio | Mobile Photographer & Visual Storyteller",
 
   description:
-    "Explore the photography portfolio of SaurxFrames Studio. Mobile photography, cinematic edits, visual storytelling, and creative moments captured through light.",
+    "Explore the photography portfolio of SaurxFrames Studio. Mobile photography, cinematic edits, visual storytelling and creative photography.",
 
   keywords: [
     "SaurxFrames",
@@ -32,10 +34,7 @@ export const metadata: Metadata = {
   ],
 
   authors: [{ name: "Saurabh Meena" }],
-
   creator: "Saurabh Meena",
-
-  metadataBase: new URL("https://saurxframes-studio.vercel.app"),
 
   openGraph: {
     title: "SaurxFrames Studio",
@@ -43,8 +42,24 @@ export const metadata: Metadata = {
       "Photography Portfolio by Saurabh Meena | Capturing Stories Through Light.",
     url: "https://saurxframes-studio.vercel.app",
     siteName: "SaurxFrames Studio",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "SaurxFrames Studio",
+      },
+    ],
     locale: "en_IN",
     type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "SaurxFrames Studio",
+    description:
+      "Photography Portfolio by Saurabh Meena | Capturing Stories Through Light.",
+    images: ["/og-image.jpg"],
   },
 
   robots: {
