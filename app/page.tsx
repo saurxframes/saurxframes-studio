@@ -5,7 +5,18 @@ import AOS from "aos";
 import emailjs from "@emailjs/browser";
 import "aos/dist/aos.css";
 import { FaInstagram, FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 export default function Home() {
+  const [user, setUser] = useState<any>(null);
+
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+  });
+
+  return () => unsubscribe();
+}, []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const images = [
   "/hero.jpg",
@@ -247,19 +258,29 @@ useEffect(() => {
     Explore Gallery
   </button>
     <div className="mt-4 flex justify-center gap-4">
-     <a
-       href="/login"
-       className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold transition"
-     >
-       Login
-    </a>
-
-  < a
-     href="/chat"
-     className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-xl font-semibold transition"
+     {!user ? (
+  <a
+    href="/login"
+    className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold transition"
   >
-     💬 Chat with SaurxFrames
-   </a>
+    Login
+  </a>
+) : user.email === "saurxmahirr@gmail.com" ? (
+  <a
+    href="/admin"
+    className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-xl font-semibold transition"
+  >
+    📥 Admin Inbox
+  </a>
+) : (
+  <a
+    href="/chat"
+    className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-xl font-semibold transition"
+  >
+    💬 Chat with SaurxFrames
+  </a>
+)}
+
  </div>
   <div
     style={{

@@ -9,6 +9,7 @@ export default function LoginPage() {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      console.log("USER:", user);
 
      const userRef = doc(db, "users", user.uid);
      const userSnap = await getDoc(userRef);
@@ -21,6 +22,7 @@ export default function LoginPage() {
          photo: user.photoURL,
          createdAt: new Date(),
       });
+      console.log("User saved successfully");
     }
 
       alert(`Welcome ${result.user.displayName}!`);
