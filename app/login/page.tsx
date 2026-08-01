@@ -1,16 +1,31 @@
 "use client";
 
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../firebase";
+import { auth, provider, db } from "../../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function LoginPage() {
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+     const userRef = doc(db, "users", user.uid);
+     const userSnap = await getDoc(userRef);
+
+     if (!userSnap.exists()) {
+        await setDoc(userRef, {
+         uid: user.uid,
+         name: user.displayName,
+         email: user.email,
+         photo: user.photoURL,
+         createdAt: new Date(),
+      });
+    }
 
       alert(`Welcome ${result.user.displayName}!`);
 
-      window.location.href = "/chat";
+      window.location.href = "/";
     } catch (error: any) {
      console.error(error);
      alert(JSON.stringify(error));
