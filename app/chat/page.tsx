@@ -8,6 +8,8 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 export default function ChatPage() {
   const [message, setMessage] = useState("");
@@ -26,6 +28,18 @@ useEffect(() => {
         ...doc.data(),
       }))
     );
+    snapshot.docs.forEach(async (item) => {
+      const data = item.data();
+
+      if (
+        data.email !== auth.currentUser?.email &&
+        data.seen === false
+     ) {
+       await updateDoc(doc(db, "messages", item.id), {
+         seen: true,
+       });
+    }
+  });
   });
 
   return () => unsubscribe();
@@ -35,10 +49,11 @@ const sendMessage = async () => {
   if (!message.trim()) return;
 
   await addDoc(collection(db, "messages"), {
-    text: message,
-    name: auth.currentUser?.displayName,
-    email: auth.currentUser?.email,
-    createdAt: serverTimestamp(),
+   text: message,
+   name: auth.currentUser?.displayName,
+   email: auth.currentUser?.email,
+   createdAt: serverTimestamp(),
+   seen: false,
   });
 
   setMessage("");
