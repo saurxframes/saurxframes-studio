@@ -58,21 +58,24 @@ useEffect(() => {
 }, []);
 
 const sendMessage = async () => {
-  if (!message.trim()) return;
+  if (!message.trim() || !auth.currentUser) return;
+
+  const isAdmin =
+    auth.currentUser.email === "saurxmahirr@gmail.com";
+
+  const conversationId = isAdmin
+    ? new URLSearchParams(window.location.search).get("user")
+    : auth.currentUser.uid;
 
   await addDoc(collection(db, "messages"), {
-  text: message,
-  name: auth.currentUser?.displayName,
-  email: auth.currentUser?.email,
-
-  conversationId:
-    auth.currentUser?.email === "saurxmahirr@gmail.com"
-      ? new URLSearchParams(window.location.search).get("user")
-      : auth.currentUser?.uid,
-
-  createdAt: serverTimestamp(),
-  seen: false,
-});
+    text: message,
+    name: auth.currentUser.displayName,
+    email: auth.currentUser.email,
+    conversationId,
+    createdAt: serverTimestamp(),
+    seen: false,
+    sender: isAdmin ? "admin" : "visitor",
+  });
 
   setMessage("");
 };
@@ -104,19 +107,23 @@ const sendMessage = async () => {
     >
      <p>{msg.text}</p>
 
-     <div className="text-xs opacity-70 mt-1">
-      <div>{msg.name}</div>
+     <div className="text-xs opacity-70 mt-1 flex justify-between items-center gap-2">
+       <span>
+         {msg.createdAt?.seconds
+           ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {
+               hour: "2-digit",
+               minute: "2-digit",
+            })
+          : ""}
+      </span>
 
-     <div>
-      {msg.createdAt?.seconds
-        ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {
-             hour: "2-digit",
-             minute: "2-digit",
-          })
-        : ""}
+      {msg.email === auth.currentUser?.email && (
+        <span>
+          {msg.seen ? "✓✓ Seen" : "✓ Sent"}
+        </span>
+      )}
     </div>
-  </div>
- </div>
+   </div>
   ))}
 
 </div>
