@@ -12,35 +12,51 @@ export default function AdminPage() {
   const [users, setUsers] = useState<any[]>([]);
 
   useEffect(() => {
+    let unsubUsers: (() => void) | undefined;
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user?.email === "saurxmahirr@gmail.com") {
         setAllowed(true);
 
-        const unsubUsers = onSnapshot(
+        unsubUsers = onSnapshot(
           collection(db, "users"),
           (snapshot) => {
-            setUsers(
-              snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-              }))
-            );
+            const data = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+
+            setUsers(data);
+            setLoading(false);
           }
         );
-
-        return () => unsubUsers();
       } else {
-        window.location.href = "/";
+        setAllowed(false);
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if (unsubUsers) unsubUsers();
+    };
   }, []);
 
-  if (loading) return <p className="text-white p-10">Loading...</p>;
-  if (!allowed) return null;
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        Loading...
+      </main>
+    );
+  }
+
+  if (!allowed) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        Access Denied
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-black text-white p-6">
@@ -48,23 +64,27 @@ export default function AdminPage() {
         📥 SaurxFrames Admin Inbox
       </h1>
 
-      <div className="space-y-4">
-        {users.map((user) => (
-          <Link
-            key={user.id}
-            href={`/chat?user=${user.id}`}
-            className="block bg-zinc-900 hover:bg-zinc-800 rounded-xl p-4"
-          >
-            <h2 className="text-lg font-semibold">
-              {user.name}
-            </h2>
+      {users.length === 0 ? (
+        <p>No visitors yet.</p>
+      ) : (
+        <div className="space-y-4">
+          {users.map((user) => (
+            <Link
+              key={user.id}
+              href={`/chat?user=${user.id}`}
+              className="block bg-zinc-900 hover:bg-zinc-800 rounded-xl p-4"
+            >
+              <h2 className="text-lg font-semibold">
+                {user.name || "Unknown User"}
+              </h2>
 
-            <p className="text-gray-400 text-sm">
-              {user.email}
-            </p>
-          </Link>
-        ))}
-      </div>
+              <p className="text-gray-400 text-sm">
+                {user.email}
+              </p>
+            </Link>
+          ))}
+        </div>
+      )}
     </main>
   );
 }
