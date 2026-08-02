@@ -17,42 +17,43 @@ export default function ChatPage() {
  const [messages, setMessages] = useState<any[]>([]);
 
 useEffect(() => {
-  if (!auth.currentUser) {
-  return;
-  }
-  const conversationId =
-  auth.currentUser?.email === "saurxmahirr@gmail.com"
-    ? new URLSearchParams(window.location.search).get("user")
-    : auth.currentUser?.uid;
+  const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+    if (!user) return;
 
-  const q = query(
-   collection(db, "messages"),
-   where("conversationId", "==", conversationId),
-   orderBy("createdAt", "asc")
-);
+    const conversationId =
+      user.email === "saurxmahirr@gmail.com"
+        ? new URLSearchParams(window.location.search).get("user")
+        : user.uid;
 
-  const unsubscribe = onSnapshot(q, (snapshot) => {
-    setMessages(
-      snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
+    const q = query(
+      collection(db, "messages"),
+      where("conversationId", "==", conversationId),
+      orderBy("createdAt", "asc")
     );
-    snapshot.docs.forEach(async (item) => {
-      const data = item.data();
 
-      if (
-        data.email !== auth.currentUser?.email &&
-        data.seen === false
-     ) {
-       await updateDoc(doc(db, "messages", item.id), {
-         seen: true,
-       });
-    }
-  });
+    const unsubscribeMessages = onSnapshot(q, async (snapshot) => {
+      setMessages(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+      );
+
+      for (const item of snapshot.docs) {
+        const data = item.data();
+
+        if (data.email !== user.email && data.seen === false) {
+          await updateDoc(doc(db, "messages", item.id), {
+            seen: true,
+          });
+        }
+      }
+    });
+
+    return unsubscribeMessages;
   });
 
-  return () => unsubscribe();
+  return () => unsubscribeAuth();
 }, []);
 
 const sendMessage = async () => {
