@@ -71,7 +71,7 @@ export default function AdminPage() {
           {users.map((user) => (
             <Link
               key={user.id}
-              href={`/chat?user=${user.id}`}
+              href={`/chat?user=${user.uid}`}
               className="block bg-zinc-900 hover:bg-zinc-800 rounded-xl p-4"
             >
               <h2 className="text-lg font-semibold">
